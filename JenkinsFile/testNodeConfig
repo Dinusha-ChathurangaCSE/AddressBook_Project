@@ -1,0 +1,19 @@
+pipeline{
+    agent any
+    environment{
+        privatekey=credentials('ansiblekey')
+    }
+    stages{
+        stage('checkout repo'){
+            steps{
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Dinusha-ChathurangaCSE/AddressBook_Project.git']])
+            }
+        }
+        stage('ansible test'){
+            steps{
+                sh  "ansible all -i inventory -m ping --private-key ${privatekey}"
+                sh "ansible-playbook -i inventory --private-key ${privatekey} playbook.yaml"
+            }
+        }
+    }
+}
